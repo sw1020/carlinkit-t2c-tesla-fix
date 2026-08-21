@@ -1,0 +1,7 @@
+# Generated firmware/build artifacts
+build/
+*.img
+*.swu
+
+# macOS
+.DS_Store

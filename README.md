@@ -49,7 +49,7 @@ This repository is designed so users can:
 - download the official firmware themselves;
 - audit exactly what changes are applied;
 - rebuild the image locally;
-- verify MD5/SHA-256 integrity before flashing;
+- verify the outer MD5 integrity and record SHA-256 fingerprints before flashing;
 - avoid trusting an opaque prebuilt binary.
 
 ## Prerequisites — macOS
@@ -63,7 +63,7 @@ Install Homebrew if needed:
 Install tools:
 
 ```bash
-brew install cpio squashfs binwalk
+brew install python cpio squashfs binwalk
 brew install nmap   # optional; useful for troubleshooting
 ```
 
@@ -115,7 +115,7 @@ The script will:
 5. Extract `update.swu`.
 6. Extract the CPIO payload.
 7. Extract the `customer` SquashFS.
-8. Apply the two source-level patches.
+8. Apply the two checked-in unified-diff patches from `patches/`.
 9. Rebuild `customer` using the original SquashFS parameters.
 10. Rebuild the CRC CPIO `update.swu`.
 11. Rebuild the outer MD5 wrapper.
@@ -150,7 +150,8 @@ Verification checks:
 - expected files exist;
 - `customer` is valid SquashFS;
 - patched CSS exists in the final image;
-- patched JavaScript exists in the final image.
+- patched JavaScript exists in the final image;
+- SHA-256 fingerprint of the rebuilt `customer` filesystem is reported for reproducibility.
 
 ## 4. Flash
 
@@ -199,6 +200,8 @@ documentWidth: 773
 ```
 
 ## Patch details
+
+The files in `patches/` are standard unified diffs. `build.sh` applies these exact files with `patch -p1`, so the reviewed patches and the changes used for the generated firmware are the same.
 
 ### `styles.css`
 
@@ -262,5 +265,7 @@ Do not publish:
 - device-specific test identifiers.
 
 ## License / responsibility
+
+The original scripts, patches, and documentation in this repository are provided under the MIT License. The proprietary CarlinKit firmware downloaded by the build process is not covered by this project's MIT License and remains subject to its owner's terms.
 
 Use at your own risk. This project is provided for technical research and reproducibility. It is not affiliated with or endorsed by CarlinKit, Tesla, or Apple.

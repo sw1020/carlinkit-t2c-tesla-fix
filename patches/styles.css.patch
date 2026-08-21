@@ -1,6 +1,6 @@
---- app/www/css/styles.css.orig
-+++ app/www/css/styles.css
-@@
+--- a/app/www/css/styles.css
++++ b/app/www/css/styles.css
+@@ -8,5 +8,5 @@
  body {
      font-weight: 400;
 -    min-width: 1024px;

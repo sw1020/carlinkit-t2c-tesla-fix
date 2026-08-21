@@ -20,12 +20,14 @@ need mksquashfs
 need md5
 need shasum
 need xxd
+need patch
 if [[ ! -x "$CPIO" ]]; then
   echo "GNU cpio not found at: $CPIO" >&2
   echo "Install with: brew install cpio" >&2
   exit 1
 fi
 
+rm -f "$BUILD/T2C-custom-update.img"
 rm -rf "$WORK"
 mkdir -p "$WORK/fw" "$WORK/customer-src"
 
@@ -107,19 +109,22 @@ grep -q 'setTimeout(rf(), 1000)' "$JS" || {
   exit 1
 }
 
-python3 - "$CSS" "$JS" <<'PY'
-from pathlib import Path
-import sys
-css=Path(sys.argv[1]); js=Path(sys.argv[2])
-s=css.read_text()
-s2=s.replace('min-width: 1024px;', 'min-width: 0;', 1)
-if s2 == s: raise SystemExit('CSS patch did not apply')
-css.write_text(s2)
-s=js.read_text()
-s2=s.replace('this.setTimeout(rf(), 1000)', 'this.setTimeout(rf, 1000)', 1)
-if s2 == s: raise SystemExit('JavaScript patch did not apply')
-js.write_text(s2)
-PY
+# Apply the exact, reviewable patches shipped in this repository.
+(
+  cd "$SRC"
+  patch --batch --forward -p1 < "$ROOT/patches/styles.css.patch"
+  patch --batch --forward -p1 < "$ROOT/patches/main.js.patch"
+)
+
+# Confirm both patches landed exactly as expected.
+grep -q 'min-width:[[:space:]]*0;' "$CSS" || {
+  echo "CSS patch verification failed." >&2
+  exit 1
+}
+grep -q 'setTimeout(rf, 1000)' "$JS" || {
+  echo "JavaScript patch verification failed." >&2
+  exit 1
+}
 
 # Rebuild customer with parameters observed in official firmware.
 CUSTOMER_MOD="$WORK/customer-mod"

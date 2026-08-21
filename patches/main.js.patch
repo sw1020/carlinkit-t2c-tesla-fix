@@ -1,6 +1,6 @@
---- app/www/js/main.js.orig
-+++ app/www/js/main.js
-@@
+--- a/app/www/js/main.js
++++ b/app/www/js/main.js
+@@ -794,4 +794,4 @@
  window.addEventListener("resize", function() {
      if (wst) this.clearTimeout(wst);
 -    wst = this.setTimeout(rf(), 1000);
