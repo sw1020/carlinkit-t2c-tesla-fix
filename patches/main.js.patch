@@ -1,0 +1,8 @@
+--- app/www/js/main.js.orig
++++ app/www/js/main.js
+@@
+ window.addEventListener("resize", function() {
+     if (wst) this.clearTimeout(wst);
+-    wst = this.setTimeout(rf(), 1000);
++    wst = this.setTimeout(rf, 1000);
+ });

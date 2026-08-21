@@ -1,0 +1,9 @@
+--- app/www/css/styles.css.orig
++++ app/www/css/styles.css
+@@
+ body {
+     font-weight: 400;
+-    min-width: 1024px;
++    min-width: 0;
+     font-size: 30px;
+ }
