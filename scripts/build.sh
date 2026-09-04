@@ -113,7 +113,7 @@ grep -q 'setTimeout(rf(), 1000)' "$JS" || {
 (
   cd "$SRC"
   patch --batch --forward -p1 < "$ROOT/patches/styles.css.patch"
-  patch --batch --forward -p1 < "$ROOT/patches/main.js.patch"
+  patch -l --batch --forward -p1 < "$ROOT/patches/main.js.patch"
 )
 
 # Confirm both patches landed exactly as expected.

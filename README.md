@@ -115,7 +115,10 @@ The script will:
 5. Extract `update.swu`.
 6. Extract the CPIO payload.
 7. Extract the `customer` SquashFS.
-8. Apply the two checked-in unified-diff patches from `patches/`.
+8. Apply the two checked-in unified-diff patches from `patches/`. The
+   `main.js` patch uses `patch -l` to tolerate the whitespace/context
+   differences observed in firmware `26020416.1508.1`; the `styles.css`
+   patch remains strict.
 9. Rebuild `customer` using the original SquashFS parameters.
 10. Rebuild the CRC CPIO `update.swu`.
 11. Rebuild the outer MD5 wrapper.
@@ -201,7 +204,17 @@ documentWidth: 773
 
 ## Patch details
 
-The files in `patches/` are standard unified diffs. `build.sh` applies these exact files with `patch -p1`, so the reviewed patches and the changes used for the generated firmware are the same.
+The files in `patches/` are standard unified diffs. `build.sh` applies these
+exact files, so the reviewed patches and the changes used for the generated
+firmware are the same. `styles.css.patch` is intentionally applied with the
+strict `patch --batch --forward -p1` invocation. `main.js.patch` is
+intentionally applied with `patch -l --batch --forward -p1` because firmware
+`26020416.1508.1` has been observed with whitespace/context differences.
+
+The relaxed whitespace matching does not remove the build's semantic safety
+checks: before patching, `build.sh` requires `setTimeout(rf(), 1000)` to exist;
+after patching, it requires `setTimeout(rf, 1000)` to exist. A firmware layout
+that does not satisfy those guards still causes the build to stop.
 
 ### `styles.css`
 
