@@ -38,8 +38,11 @@ grep -q 'ly_project_name = "ly1508"' "$TMP/cpio/sw-description" || {
 mkdir "$TMP/customer"
 (
   cd "$TMP/customer"
-  unsquashfs "$TMP/cpio/customer" >/dev/null
+  unsquashfs "$TMP/cpio/customer" app/www/css/styles.css app/www/js/main.js >/dev/null
 )
+unsquashfs -lls "$TMP/cpio/customer" | grep -q '^c.* 5, *1 .*squashfs-root/dev/console$' || {
+  echo "FAIL: dev/console device node missing in final firmware" >&2; exit 1
+}
 ROOT="$TMP/customer/squashfs-root"
 grep -q 'min-width:[[:space:]]*0;' "$ROOT/app/www/css/styles.css" || {
   echo "FAIL: CSS patch not present in final firmware" >&2; exit 1

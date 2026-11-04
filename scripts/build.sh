@@ -91,7 +91,9 @@ grep -q 'ly_project_name = "ly1508"' "$WORK/fw/sw-description" || {
 # Extract SquashFS.
 (
   cd "$WORK/customer-src"
-  unsquashfs "$WORK/fw/customer" >/dev/null
+  # Keep original permissions (e.g. group-write on eyesee-mpp libs) when extracting as non-root.
+  umask 0000  # Non-root cannot mknod; dev/console is re-added via a pseudo definition in mksquashfs.
+  unsquashfs -excludes "$WORK/fw/customer" dev/console >/dev/null
 )
 SRC="$WORK/customer-src/squashfs-root"
 CSS="$SRC/app/www/css/styles.css"
@@ -114,6 +116,7 @@ grep -q 'setTimeout(rf(), 1000)' "$JS" || {
   cd "$SRC"
   patch --batch --forward -p1 < "$ROOT/patches/styles.css.patch"
   patch -l --batch --forward -p1 < "$ROOT/patches/main.js.patch"
+  rm -f app/www/css/styles.css.orig app/www/js/main.js.orig
 )
 
 # Confirm both patches landed exactly as expected.
@@ -135,6 +138,7 @@ mksquashfs "$SRC" "$CUSTOMER_MOD" \
   -xattrs \
   -exports \
   -all-root \
+  -p 'dev/console c 600 0 0 5 1' \
   -nopad >/dev/null
 
 # Build SWU in the original order.
