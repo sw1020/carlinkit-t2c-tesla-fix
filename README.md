@@ -1,5 +1,7 @@
 # CarlinKit T2C Tesla Browser Resolution Fix
 
+English | [中文](README.zh-CN.md)
+
 A reproducible, auditable build process for a CarlinKit T2C custom firmware that fixes the CarPlay browser cropping/scaling issue observed after a Tesla browser/software update.
 
 ## What this fixes
